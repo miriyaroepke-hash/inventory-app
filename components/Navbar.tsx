@@ -1,14 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
-import { LayoutDashboard, Package, ScanBarcode, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, ScanBarcode, LogOut, Search, X } from 'lucide-react';
 import clsx from 'clsx';
 
 export default function Navbar() {
     const pathname = usePathname();
     const { data: session } = useSession();
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     if (!session) return null;
 
@@ -47,7 +49,33 @@ export default function Navbar() {
                             })}
                         </div>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center space-x-4">
+                        <div className="relative">
+                            {isSearchOpen ? (
+                                <div className="flex items-center">
+                                    <input
+                                        type="text"
+                                        placeholder="Поиск..."
+                                        className="w-48 rounded-md border border-gray-300 px-3 py-1 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                const target = e.target as HTMLInputElement;
+                                                window.location.href = `/inventory?search=${target.value}`;
+                                            }
+                                        }}
+                                        autoFocus
+                                        onBlur={() => setIsSearchOpen(false)}
+                                    />
+                                    <button onClick={() => setIsSearchOpen(false)} className="ml-2 text-gray-500 hover:text-gray-700">
+                                        <X className="h-5 w-5" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <button onClick={() => setIsSearchOpen(true)} className="text-gray-500 hover:text-gray-900">
+                                    <Search className="h-5 w-5" />
+                                </button>
+                            )}
+                        </div>
                         <div className="flex flex-shrink-0">
                             <button
                                 onClick={() => signOut({ callbackUrl: '/login' })}
