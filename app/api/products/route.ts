@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json();
-        const { name, size, price, sku, image } = body;
+        const { name, size, price, sku, image, quantity } = body;
 
         // Check if SKU already exists
         const existingProduct = await prisma.product.findUnique({
@@ -40,7 +40,7 @@ export async function POST(request: Request) {
                 price: parseFloat(price),
                 sku,
                 image,
-                quantity: 0, // Initial quantity is 0, use Transactions to add stock
+                quantity: quantity ? parseInt(quantity) : 0,
             },
         });
 
