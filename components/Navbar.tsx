@@ -24,7 +24,7 @@ export default function Navbar() {
                 <div className="flex h-16 justify-between">
                     <div className="flex">
                         <div className="flex flex-shrink-0 items-center">
-                            <span className="text-xl font-bold text-indigo-600">InvApp</span>
+                            <span className="text-xl font-bold text-indigo-600">Dimmiani</span>
                         </div>
                         <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                             {links.map((link) => {
