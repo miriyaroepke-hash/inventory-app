@@ -38,13 +38,13 @@ export default async function DashboardPage() {
     const stats = [
         { name: 'Total Products', value: productCount, icon: Package, color: 'bg-blue-500' },
         { name: 'Low Stock Alerts', value: lowStockCount, icon: AlertTriangle, color: 'bg-red-500' },
-        { name: 'Inventory Value', value: `$${totalValue.toLocaleString()}`, icon: DollarSign, color: 'bg-green-500' },
+        { name: 'Стоимость склада', value: `₸${totalValue.toLocaleString()}`, icon: DollarSign, color: 'bg-green-500' },
         { name: 'Recent Activity', value: `${recentTransactions.length} txns`, icon: Activity, color: 'bg-purple-500' },
     ];
 
     return (
         <div>
-            <h1 className="mb-6 text-2xl font-bold text-gray-900">Dashboard</h1>
+            <h1 className="mb-6 text-2xl font-bold text-black">Dashboard</h1>
 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 {stats.map((stat) => (

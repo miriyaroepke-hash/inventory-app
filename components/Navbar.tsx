@@ -13,9 +13,9 @@ export default function Navbar() {
     if (!session) return null;
 
     const links = [
-        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-        { name: 'Inventory', href: '/inventory', icon: Package },
-        { name: 'Scan/Sell', href: '/scan', icon: ScanBarcode },
+        { name: 'Главная', href: '/dashboard', icon: LayoutDashboard },
+        { name: 'Склад', href: '/inventory', icon: Package },
+        { name: 'Продажа/Сканер', href: '/scan', icon: ScanBarcode },
     ];
 
     return (
@@ -54,7 +54,7 @@ export default function Navbar() {
                                 className="relative inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
                                 <LogOut className="mr-2 h-4 w-4" />
-                                Logout
+                                Выйти
                             </button>
                         </div>
                     </div>

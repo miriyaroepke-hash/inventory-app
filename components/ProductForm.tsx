@@ -138,15 +138,71 @@ export default function ProductForm({ initialData }: ProductFormProps) {
                 </div>
 
                 <div className="sm:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700">Image URL</label>
-                    <input
-                        type="url"
-                        name="image"
-                        value={formData.image}
-                        onChange={handleChange}
-                        placeholder="https://example.com/image.jpg"
-                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-                    />
+                    <label className="block text-sm font-medium text-gray-700">Фото товара (Загрузить)</label>
+                    <div className="mt-1 flex items-center space-x-4">
+                        {formData.image && (
+                            <div className="relative h-20 w-20">
+                                <img src={formData.image} alt="Preview" className="h-20 w-20 rounded object-cover" />
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData(prev => ({ ...prev, image: '' }))}
+                                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 text-xs"
+                                >
+                                    X
+                                </button>
+                            </div>
+                        )}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                    if (file.size > 4 * 1024 * 1024) {
+                                        alert("Файл слишком большой (макс 4MB)");
+                                        return;
+                                    }
+                                    const reader = new FileReader();
+                                    reader.onload = (ev) => {
+                                        const img = new Image();
+                                        img.onload = () => {
+                                            const canvas = document.createElement('canvas');
+                                            let width = img.width;
+                                            let height = img.height;
+                                            const MAX_WIDTH = 800;
+                                            const MAX_HEIGHT = 800;
+
+                                            if (width > height) {
+                                                if (width > MAX_WIDTH) {
+                                                    height *= MAX_WIDTH / width;
+                                                    width = MAX_WIDTH;
+                                                }
+                                            } else {
+                                                if (height > MAX_HEIGHT) {
+                                                    width *= MAX_HEIGHT / height;
+                                                    height = MAX_HEIGHT;
+                                                }
+                                            }
+                                            canvas.width = width;
+                                            canvas.height = height;
+                                            const ctx = canvas.getContext('2d');
+                                            ctx?.drawImage(img, 0, 0, width, height);
+                                            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                                            setFormData(prev => ({ ...prev, image: dataUrl }));
+                                        };
+                                        img.src = ev.target?.result as string;
+                                    };
+                                    reader.readAsDataURL(file);
+                                }
+                            }}
+                            className="block w-full text-sm text-gray-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-md file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-indigo-50 file:text-indigo-700
+                                hover:file:bg-indigo-100"
+                        />
+                    </div>
                 </div>
             </div>
 

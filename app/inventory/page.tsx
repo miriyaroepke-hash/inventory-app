@@ -119,7 +119,7 @@ export default function InventoryPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{product.sku}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${product.price}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₸{product.price}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${product.quantity < 5 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
                                             }`}>

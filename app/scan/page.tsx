@@ -176,14 +176,16 @@ export default function ScanPage() {
 
                 {product && (
                     <div className="border-t pt-4 mt-4">
-                        <div className="flex items-center space-x-4 mb-4">
+                        <div className="mt-4 p-4 bg-gray-50 rounded-md border flex items-center space-x-4">
                             {product.image && (
-                                <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded" />
+                                <div className="flex-shrink-0">
+                                    <img src={product.image} alt={product.name} className="h-16 w-16 object-cover rounded shadow-sm" />
+                                </div>
                             )}
                             <div>
                                 <h3 className="text-lg font-medium">{product.name}</h3>
                                 <p className="text-gray-500">Stock: {product.quantity}</p>
-                                <p className="text-gray-500">${product.price}</p>
+                                <p className="text-gray-500">₸{product.price}</p>
                             </div>
                         </div>
 
