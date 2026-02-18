@@ -171,34 +171,73 @@ export default function InventoryPage() {
 
     const handlePrintLabels = async () => {
         const { jsPDF } = await import('jspdf');
+        const html2canvas = (await import('html2canvas')).default;
+        const JsBarcode = (await import('jsbarcode')).default;
+
         const productsToPrint = products.filter(p => selectedProducts.has(p.id));
         if (productsToPrint.length === 0) return alert('Выберите товары для печати ценников');
 
-        // 42mm x 25mm label size
-        const doc = new jsPDF({
+        // Container for generating images
+        const printContainer = document.createElement('div');
+        printContainer.style.position = 'absolute';
+        printContainer.style.top = '-9999px';
+        printContainer.style.left = '-9999px';
+        printContainer.style.width = '42mm'; // Physical width
+        // printContainer.style.height = '25mm'; // Physical height
+        document.body.appendChild(printContainer);
+
+        const pdf = new jsPDF({
             orientation: 'landscape',
             unit: 'mm',
             format: [42, 25]
         });
 
-        productsToPrint.forEach((product, index) => {
-            if (index > 0) doc.addPage();
+        for (let i = 0; i < productsToPrint.length; i++) {
+            const product = productsToPrint[i];
 
-            doc.setFontSize(8);
-            doc.text(product.name.substring(0, 20), 2, 4); // Product Name
+            // Render label HTML
+            printContainer.innerHTML = `
+                <div style="width: 158px; height: 94px; background: white; padding: 4px; display: flex; flex-direction: column; justify-content: space-between; font-family: sans-serif; box-sizing: border-box; border: 1px solid white;">
+                     <div style="font-size: 10px; font-weight: bold; line-height: 1.1; overflow: hidden; height: 22px;">
+                        ${product.name}
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 10px;">${product.size ? `Р-р: ${product.size}` : ''}</span>
+                        <span style="font-size: 14px; font-weight: bold;">${product.price} ₸</span>
+                    </div>
+                    <div style="text-align: center;">
+                        <svg id="barcode-${i}"></svg>
+                    </div>
+                </div>
+            `;
 
-            doc.setFontSize(10);
-            doc.setFont("helvetica", "bold");
-            doc.text(`${product.size ? `Размер: ${product.size}` : ''}`, 2, 9); // Size
+            // Generate barcode
+            JsBarcode(`#barcode-${i}`, product.sku, {
+                format: "CODE128",
+                width: 1.5,
+                height: 30,
+                displayValue: true,
+                fontSize: 10,
+                margin: 0
+            });
 
-            doc.setFontSize(8);
-            doc.setFont("helvetica", "normal");
-            doc.text(`${product.sku}`, 2, 14); // SKU Text
+            // Wait for render
+            await new Promise(r => setTimeout(r, 10));
 
-            doc.text(`₸${product.price}`, 25, 9);
-        });
+            // Capture as image
+            const canvas = await html2canvas(printContainer.firstElementChild as HTMLElement, {
+                scale: 4, // High resolution
+                useCORS: true,
+                logging: false
+            });
+            const imgData = canvas.toDataURL('image/png');
 
-        doc.save("labels.pdf");
+            if (i > 0) pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, 0, 42, 25);
+        }
+
+        document.body.removeChild(printContainer);
+        pdf.save(`labels_${new Date().toISOString().slice(0, 10)}.pdf`);
     };
 
     const filteredProducts = products.filter(product =>
