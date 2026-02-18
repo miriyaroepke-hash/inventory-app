@@ -64,6 +64,7 @@ model Order {
   sdekUuid      String? // SDEK Order UUID
   sdekNumber    String? // SDEK Waybill Number
   sdekStatus    String? // SDEK Status
+  sdekCityCode  Int?    // SDEK City Code for Receiver
   
   status        String   @default("PENDING") // PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED
   
