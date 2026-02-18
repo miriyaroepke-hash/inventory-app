@@ -79,23 +79,22 @@ export async function POST(request: Request) {
                     const imgData: any = await imgRes.json();
 
                     if (imgData.rows && imgData.rows.length > 0) {
-                        const downloadUrl = imgData.rows[0].meta.downloadHref;
+                        // Try to get miniature first (MoiSklad provides 'miniature' and 'tiny')
+                        let downloadUrl = imgData.rows[0].meta.downloadHref;
+
+                        if (imgData.rows[0].miniature && imgData.rows[0].miniature.href) {
+                            downloadUrl = imgData.rows[0].miniature.href;
+                        } else if (imgData.rows[0].tiny && imgData.rows[0].tiny.href) {
+                            downloadUrl = imgData.rows[0].tiny.href;
+                        }
+
                         const binaryRes = await fetch(downloadUrl, { headers: { 'Authorization': AUTH_HEADER } });
                         if (binaryRes.ok) {
                             const arrayBuffer = await binaryRes.arrayBuffer();
                             const buffer = Buffer.from(arrayBuffer);
 
-                            // COMPRESSION using sharp (Temporarily Disabled for Build Check)
-                            // const resizedBuffer = await sharp(buffer)
-                            //     .resize(800, 800, { // Max dims
-                            //         fit: 'inside',
-                            //         withoutEnlargement: true
-                            //     })
-                            //     .jpeg({ quality: 80 }) // Compress to JPEG 80%
-                            //     .toBuffer();
-
-                            // const base64 = resizedBuffer.toString('base64');
-                            const base64 = buffer.toString('base64'); // Temporary Direct Base64
+                            // No need for sharp if we fetch miniature!
+                            const base64 = buffer.toString('base64');
                             imageBase64 = `data:image/jpeg;base64,${base64}`;
                         }
                     }

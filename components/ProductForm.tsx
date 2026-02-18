@@ -172,10 +172,8 @@ export default function ProductForm({ initialData }: ProductFormProps) {
                             onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (file) {
-                                    if (file.size > 4 * 1024 * 1024) {
-                                        alert("Файл слишком большой (макс 4MB)");
-                                        return;
-                                    }
+                                    // Automatic compression will handle large files
+                                    // if (file.size > 4 * 1024 * 1024) { ... } removed
                                     const reader = new FileReader();
                                     reader.onload = (ev) => {
                                         const img = new Image();

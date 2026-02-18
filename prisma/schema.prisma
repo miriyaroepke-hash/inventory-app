@@ -59,6 +59,11 @@ model Order {
   clientFlat    String?
   clientNote    String?
   
+  // External Integration
+  source        String   @default("LOCAL") // LOCAL, KASPI, MOYSKLAD
+  externalId    String?  @unique // Kaspi ID or Ms ID
+  waybillUrl    String?  // Link to PDF
+  
   // Shipping Info
   shippingMethod String // SDEK, YANDEX, POST, ALMATY_COURIER, RIKA_INDRIVE, PICKUP
   sdekUuid      String? // SDEK Order UUID
