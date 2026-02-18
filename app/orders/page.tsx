@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Plus, Search, Filter, Truck, PackageCheck, RefreshCw } from 'lucide-react';
+import { Plus, Search, PackageCheck, RefreshCw } from 'lucide-react';
 
 interface Order {
     id: string;

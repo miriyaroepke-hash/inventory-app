@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { RefreshCw, CheckCircle, AlertTriangle } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export default function ImportPage() {
