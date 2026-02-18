@@ -10,14 +10,20 @@ const AUTH_HEADER = 'Basic ' + Buffer.from(`${MOYSKLAD_LOGIN}:${MOYSKLAD_PASSWOR
 
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
-    // if (!session || session.user.role !== 'ADMIN') return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { offset = 0, limit = 25 } = await request.json();
+    const body = await request.json();
+    const { offset = 0, limit = 25, login, password } = body;
 
-    if (!MOYSKLAD_LOGIN || !MOYSKLAD_PASSWORD) {
-        return NextResponse.json({ error: 'Credentials missing' }, { status: 500 });
+    // Use Envs or Body params
+    const effectiveLogin = process.env.MOYSKLAD_LOGIN || login;
+    const effectivePassword = process.env.MOYSKLAD_PASSWORD || password;
+
+    if (!effectiveLogin || !effectivePassword) {
+        return NextResponse.json({ error: 'Credentials missing. Please provide login/password.' }, { status: 500 });
     }
+
+    const AUTH_HEADER = 'Basic ' + Buffer.from(`${effectiveLogin}:${effectivePassword}`).toString('base64');
 
     try {
         // 1. Fetch from MoiSklad

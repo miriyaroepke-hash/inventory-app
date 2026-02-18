@@ -9,6 +9,11 @@ export default function ImportPage() {
     const [progress, setProgress] = useState(0);
     const [status, setStatus] = useState('');
     const [logs, setLogs] = useState<string[]>([]);
+
+    // Credentials input
+    const [login, setLogin] = useState('');
+    const [password, setPassword] = useState('');
+
     const router = useRouter();
 
     const addLog = (msg: string) => setLogs(prev => [msg, ...prev]);
@@ -30,7 +35,7 @@ export default function ImportPage() {
                 const res = await fetch('/api/admin/import-moysklad', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ offset, limit })
+                    body: JSON.stringify({ offset, limit, login, password })
                 });
 
                 if (!res.ok) {
@@ -80,6 +85,29 @@ export default function ImportPage() {
                         <li>Штрихкоды (будут записаны как SKU)</li>
                         <li>Фотографии (будут сохранены в базу)</li>
                     </ul>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">MoiSklad Login</label>
+                        <input
+                            type="text"
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
+                            value={login}
+                            onChange={e => setLogin(e.target.value)}
+                            placeholder="login"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">MoiSklad Password</label>
+                        <input
+                            type="password"
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border p-2"
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            placeholder="password"
+                        />
+                    </div>
                 </div>
 
                 {loading ? (
