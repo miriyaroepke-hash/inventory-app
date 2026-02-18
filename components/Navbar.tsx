@@ -26,7 +26,7 @@ export default function Navbar() {
 
     if (session.user.role === 'ADMIN') {
         links.push({ name: 'Пользователи', href: '/users', icon: User },);
-        links.push({ name: 'CRM Импорт', href: '/admin/import', icon: Database });
+        links.push({ name: 'CRM Импорт', href: '/admin/import', icon: Download });
     }
 
     return (
