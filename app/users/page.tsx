@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Loader2, Edit, Save, X } from 'lucide-react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 interface User {
     id: string;
@@ -17,9 +19,17 @@ export default function UsersPage() {
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const [newName, setNewName] = useState('');
 
+    const { data: session, status } = useSession();
+    const router = useRouter();
+
     useEffect(() => {
+        if (status === 'loading') return;
+        if (!session || session.user.role !== 'ADMIN') {
+            router.push('/dashboard');
+            return;
+        }
         fetchUsers();
-    }, []);
+    }, [session, status, router]);
 
     const fetchUsers = async () => {
         try {
