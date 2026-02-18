@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import sharp from 'sharp';
+// import sharp from 'sharp';
 
 
 export async function POST(request: Request) {
@@ -85,16 +85,17 @@ export async function POST(request: Request) {
                             const arrayBuffer = await binaryRes.arrayBuffer();
                             const buffer = Buffer.from(arrayBuffer);
 
-                            // COMPRESSION using sharp
-                            const resizedBuffer = await sharp(buffer)
-                                .resize(800, 800, { // Max dims
-                                    fit: 'inside',
-                                    withoutEnlargement: true
-                                })
-                                .jpeg({ quality: 80 }) // Compress to JPEG 80%
-                                .toBuffer();
+                            // COMPRESSION using sharp (Temporarily Disabled for Build Check)
+                            // const resizedBuffer = await sharp(buffer)
+                            //     .resize(800, 800, { // Max dims
+                            //         fit: 'inside',
+                            //         withoutEnlargement: true
+                            //     })
+                            //     .jpeg({ quality: 80 }) // Compress to JPEG 80%
+                            //     .toBuffer();
 
-                            const base64 = resizedBuffer.toString('base64');
+                            // const base64 = resizedBuffer.toString('base64');
+                            const base64 = buffer.toString('base64'); // Temporary Direct Base64
                             imageBase64 = `data:image/jpeg;base64,${base64}`;
                         }
                     }
