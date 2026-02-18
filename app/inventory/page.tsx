@@ -60,21 +60,28 @@ export default function InventoryPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h1 className="text-2xl font-bold text-gray-900">Inventory</h1>
-                <div className="flex space-x-3">
+            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
+                <h1 className="text-2xl font-bold text-gray-900">Склад</h1>
+                <div className="flex flex-wrap gap-3">
                     <Link
                         href="/inventory/add"
                         className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
                     >
                         <Plus className="-ml-1 mr-2 h-5 w-5" />
-                        Add Product
+                        Добавить товар
+                    </Link>
+                    <Link
+                        href="/inventory/line"
+                        className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700"
+                    >
+                        <Plus className="-ml-1 mr-2 h-5 w-5" />
+                        Добавить линейку
                     </Link>
                     <Link
                         href="/inventory/bulk"
                         className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
                     >
-                        Bulk Import
+                        Импорт (CSV)
                     </Link>
                 </div>
             </div>
@@ -85,7 +92,7 @@ export default function InventoryPage() {
                 </div>
                 <input
                     type="text"
-                    placeholder="Search by name or SKU..."
+                    placeholder="Поиск по названию или артикулу..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -93,18 +100,18 @@ export default function InventoryPage() {
             </div>
 
             {loading ? (
-                <div className="text-center py-10">Loading...</div>
+                <div className="text-center py-10">Загрузка...</div>
             ) : (
                 <div className="bg-white shadow overflow-hidden sm:rounded-lg">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Товар</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Артикул</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Цена</th>
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Остаток</th>
                                 <th scope="col" className="relative px-6 py-3">
-                                    <span className="sr-only">Actions</span>
+                                    <span className="sr-only">Действия</span>
                                 </th>
                             </tr>
                         </thead>
@@ -147,7 +154,7 @@ export default function InventoryPage() {
                         </tbody>
                     </table>
                     {filteredProducts.length === 0 && (
-                        <div className="text-center py-6 text-gray-500">No products found</div>
+                        <div className="text-center py-6 text-gray-500">Товары не найдены</div>
                     )}
                 </div>
             )}
