@@ -32,10 +32,22 @@ export default function OrdersPage() {
         try {
             const url = statusFilter === 'ALL' ? '/api/orders' : `/api/orders?status=${statusFilter}`;
             const res = await fetch(url);
+
+            if (!res.ok) {
+                throw new Error(`Error: ${res.status}`);
+            }
+
             const data = await res.json();
-            setOrders(data);
+
+            if (Array.isArray(data)) {
+                setOrders(data);
+            } else {
+                console.error('API did not return an array:', data);
+                setOrders([]);
+            }
         } catch (error) {
             console.error('Failed to fetch orders', error);
+            setOrders([]);
         } finally {
             setLoading(false);
         }
@@ -116,7 +128,12 @@ export default function OrdersPage() {
                                 <tr key={order.id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="text-sm font-medium text-indigo-600">#{order.id.slice(-6)}</div>
-                                        <div className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</div>
+                                        <div className="text-sm text-gray-500">
+                                            {/* Suppress hydration warning for date mismatch */}
+                                            <span suppressHydrationWarning>
+                                                {new Date(order.createdAt).toLocaleDateString()}
+                                            </span>
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="text-sm font-medium text-gray-900">{order.clientName}</div>
