@@ -80,7 +80,7 @@ export default async function DashboardPage() {
                                             {transaction.product.name}
                                         </p>
                                         <p className="text-sm text-gray-500 truncate">
-                                            {transaction.user?.username || 'Unknown User'}
+                                            {transaction.user?.name || transaction.user?.username || 'Unknown User'}
                                         </p>
                                     </div>
                                     <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${transaction.type === 'IN' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'

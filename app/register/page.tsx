@@ -6,6 +6,7 @@ import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function RegisterPage() {
+    const [name, setName] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -21,7 +22,7 @@ export default function RegisterPage() {
             const res = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password }),
+                body: JSON.stringify({ username, password, name }),
             });
 
             if (!res.ok) {
@@ -49,6 +50,17 @@ export default function RegisterPage() {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Name</label>
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+                            required
+                            placeholder="Full Name"
+                        />
+                    </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Username</label>
                         <input
