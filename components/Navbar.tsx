@@ -19,6 +19,9 @@ export default function Navbar() {
         { name: 'Склад', href: '/inventory', icon: Package },
         { name: 'Продажи', href: '/sales', icon: ScanBarcode },
         { name: 'Инвентаризация', href: '/scan', icon: ScanBarcode },
+        { name: 'Заказы', href: '/orders', icon: Package },
+        { name: 'Kaspi', href: '/kaspi', icon: Package },
+        { name: 'Возвраты', href: '/returns', icon: Package },
     ];
 
     if (session.user.role === 'ADMIN') {

@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -32,6 +32,7 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   transactions Transaction[]
+  orderItems    OrderItem[]
 }
 
 model Transaction {
@@ -43,4 +44,42 @@ model Transaction {
   userId    String?
   user      User?    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+}
+
+model Order {
+  id        String   @id @default(cuid())
+  // orderNumber removed for SQLite compatibility
+  
+  // Client Info
+  clientName    String
+  clientPhone   String
+  clientAddress String?
+  clientNote    String?
+  
+  // Shipping Info
+  shippingMethod String // SDEK, YANDEX, POST, ALMATY_COURIER, RIKA_INDRIVE, PICKUP
+  sdekUuid      String? // SDEK Order UUID
+  sdekNumber    String? // SDEK Waybill Number
+  sdekStatus    String? // SDEK Status
+  
+  status        String   @default("PENDING") // PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  
+  totalAmount   Float
+  
+  items         OrderItem[]
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+  
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  
+  quantity  Int
+  price     Float // Snapshotted price at time of order
 }
