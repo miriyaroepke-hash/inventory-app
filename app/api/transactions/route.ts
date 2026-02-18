@@ -91,6 +91,7 @@ export async function GET(request: Request) {
             where: whereClause,
             include: {
                 product: true,
+                user: true,
             },
             orderBy: {
                 createdAt: 'desc',
