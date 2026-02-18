@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -48,7 +48,7 @@ model Transaction {
 
 model Order {
   id        String   @id @default(cuid())
-  // orderNumber removed for SQLite compatibility
+  orderNumber Int    @default(autoincrement())
   
   // Client Info
   clientName    String
