@@ -196,16 +196,18 @@ export default function InventoryPage() {
             const product = productsToPrint[i];
 
             // Render label HTML
+            // 42mm is approx 158px at 96dpi, 25mm is approx 94px.
+            // Reduced font sizes and barcode height to prevent overlap.
             printContainer.innerHTML = `
-                <div style="width: 158px; height: 94px; background: white; padding: 4px; display: flex; flex-direction: column; justify-content: space-between; font-family: sans-serif; box-sizing: border-box; border: 1px solid white;">
-                     <div style="font-size: 10px; font-weight: bold; line-height: 1.1; overflow: hidden; height: 22px;">
-                        ${product.name}
+                <div style="width: 158px; height: 94px; background: white; padding: 2px 4px; display: flex; flex-direction: column; justify-content: flex-start; font-family: sans-serif; box-sizing: border-box; overflow: hidden;">
+                     <div style="font-size: 9px; font-weight: bold; line-height: 1.1; overflow: hidden; height: 20px; margin-bottom: 2px;">
+                        ${product.name.substring(0, 40)}
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 10px;">${product.size ? `Р-р: ${product.size}` : ''}</span>
-                        <span style="font-size: 14px; font-weight: bold;">${product.price} ₸</span>
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px;">
+                        <span style="font-size: 9px; white-space: nowrap;">${product.size ? `Р-р: ${product.size}` : ''}</span>
+                        <span style="font-size: 11px; font-weight: bold; white-space: nowrap;">${product.price} ₸</span>
                     </div>
-                    <div style="text-align: center;">
+                    <div style="text-align: center; flex-grow: 1; display: flex; align-items: flex-end; justify-content: center;">
                         <svg id="barcode-${i}"></svg>
                     </div>
                 </div>
@@ -214,10 +216,11 @@ export default function InventoryPage() {
             // Generate barcode
             JsBarcode(`#barcode-${i}`, product.sku, {
                 format: "CODE128",
-                width: 1.5,
-                height: 30,
+                width: 1.2, // Slightly thinner bars
+                height: 25, // Reduced height (was 30)
                 displayValue: true,
-                fontSize: 10,
+                fontSize: 9, // Smaller text under barcode
+                textMargin: 0,
                 margin: 0
             });
 
