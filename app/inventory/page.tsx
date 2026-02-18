@@ -15,6 +15,9 @@ interface Product {
 }
 
 export default function InventoryPage() {
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
     const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 

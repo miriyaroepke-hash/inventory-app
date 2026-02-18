@@ -1,10 +1,10 @@
 @echo off
 echo ==========================================
-echo Pushing Visual Fixes...
+echo Pushing Fix for Inventory Page...
 echo ==========================================
 
 ..\PortableGit\cmd\git.exe add .
-..\PortableGit\cmd\git.exe commit -m "Fix dashboard text color in dark mode"
+..\PortableGit\cmd\git.exe commit -m "Fix: Restore missing state variables in Inventory page"
 ..\PortableGit\cmd\git.exe push origin main
 
 echo.
