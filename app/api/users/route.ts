@@ -7,7 +7,7 @@ import { hash } from 'bcryptjs';
 
 export async function GET() {
     const session = await getServerSession(authOptions);
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session || !session.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const users = await prisma.user.findMany({
         select: { id: true, username: true, name: true, role: true, createdAt: true }
@@ -17,7 +17,7 @@ export async function GET() {
 
 export async function PUT(request: Request) {
     const session = await getServerSession(authOptions);
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session || !session.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     // Simple admin check or self-update check could go here. 
     // For now assuming any logged in user can update (or we trust the admin/users).

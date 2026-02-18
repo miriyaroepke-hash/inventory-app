@@ -6,7 +6,7 @@ import { Prisma } from '@prisma/client';
 
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
-    if (!session) {
+    if (!session || !session.user) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -22,6 +22,8 @@ export async function POST(request: Request) {
         if (isNaN(qty) || qty <= 0) {
             return NextResponse.json({ error: 'Invalid quantity' }, { status: 400 });
         }
+
+        const userId = (session.user as any).id; // Cast to any to fix TS error
 
         // Start a transaction to ensure data consistency
         const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
@@ -49,7 +51,7 @@ export async function POST(request: Request) {
                     type,
                     quantity: qty,
                     productId,
-                    userId: session.user.id,
+                    userId: userId,
                 },
             });
 
