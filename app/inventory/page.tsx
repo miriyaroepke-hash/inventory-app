@@ -21,6 +21,8 @@ export default function InventoryPage() {
     const [selectedProducts, setSelectedProducts] = useState<Set<string>>(new Set());
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
+    const [cart, setCart] = useState<{ product: Product; quantity: number }[]>([]);
+
     useEffect(() => {
         // Check URL for search param
         if (typeof window !== 'undefined') {
@@ -75,6 +77,55 @@ export default function InventoryPage() {
         }
         setSelectedProducts(newSelected);
     };
+
+    const addToCart = (product: Product) => {
+        setCart(prev => {
+            const existing = prev.find(item => item.product.id === product.id);
+            if (existing) {
+                return prev.map(item =>
+                    item.product.id === product.id
+                        ? { ...item, quantity: item.quantity + 1 }
+                        : item
+                );
+            }
+            return [...prev, { product, quantity: 1 }];
+        });
+    };
+
+    const removeFromCart = (productId: string) => {
+        setCart(prev => prev.filter(item => item.product.id !== productId));
+    };
+
+    const handleCheckout = async () => {
+        if (!confirm('Подтвердить продажу?')) return;
+
+        try {
+            for (const item of cart) {
+                const res = await fetch('/api/transactions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        productId: item.product.id,
+                        type: 'OUT',
+                        quantity: item.quantity
+                    })
+                });
+
+                if (!res.ok) {
+                    const error = await res.json();
+                    alert(`Ошибка при продаже ${item.product.name}: ${error.error}`);
+                }
+            }
+            setCart([]);
+            fetchProducts();
+            alert('Продажа успешно оформлена!');
+        } catch (error) {
+            console.error('Checkout failed', error);
+            alert('Произошла ошибка при оформлении продажи');
+        }
+    };
+
+    const cartTotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
 
     const deleteProduct = async (id: string) => {
         if (!confirm('Вы уверены, что хотите удалить этот товар?')) return;
@@ -144,20 +195,6 @@ export default function InventoryPage() {
             doc.setFont("helvetica", "normal");
             doc.text(`${product.sku}`, 2, 14); // SKU Text
 
-            // Barcode (using simple text for now or draw lines if library allows, but standard jsPDF doesn't do barcodes easily without plugin. 
-            // Ideally we'd use a barcode plugin. For now, let's just print SKU large.)
-
-            // Actually, let's try to draw a simple code 128 or just trust the SKU text is enough for user request "name+size+barcode".
-            // Since we can't easily generate barcode vector in pure jsPDF without plugins (which might strip), 
-            // we will render SKU prominently. *User asked for barcode on label*.
-            // If I can't generate a real barcode image here easily without more complex setup, 
-            // I will output the text SKU clearly. 
-
-            // Alternative: Use a font or draw lines. 
-            // Let's stick to text for MVP unless I can import 'jsbarcode'. 
-            // Wait, I can generate a barcode dataURI using a canvas helper if needed, but that's complex.
-            // Let's stick to placing the info first.
-
             doc.text(`₸${product.price}`, 25, 9);
         });
 
@@ -171,6 +208,31 @@ export default function InventoryPage() {
 
     return (
         <div className="space-y-6">
+            {/* Cart Summary Panel */}
+            {cart.length > 0 && (
+                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 flex flex-col sm:flex-row justify-between items-center gap-4 sticky top-0 z-10 shadow-md">
+                    <div className="flex items-center gap-4">
+                        <span className="text-lg font-bold text-indigo-900">Чек: {cart.length} поз.</span>
+                        <span className="text-xl font-bold text-indigo-600">₸{cartTotal}</span>
+                    </div>
+                    <div className="flex gap-2 overflow-x-auto max-w-xl">
+                        {cart.map((item) => (
+                            <div key={item.product.id} className="bg-white px-2 py-1 rounded border border-indigo-100 flex items-center gap-2 text-sm whitespace-nowrap">
+                                <span>{item.product.name} ({item.product.size})</span>
+                                <span className="bg-indigo-100 text-indigo-800 px-1.5 rounded-full text-xs">{item.quantity}</span>
+                                <button onClick={() => removeFromCart(item.product.id)} className="text-red-500 hover:text-red-700 font-bold">×</button>
+                            </div>
+                        ))}
+                    </div>
+                    <button
+                        onClick={handleCheckout}
+                        className="bg-green-600 text-white px-6 py-2 rounded-md font-bold hover:bg-green-700 shadow-sm whitespace-nowrap"
+                    >
+                        Продать (Списать)
+                    </button>
+                </div>
+            )}
+
             <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
                 <h1 className="text-2xl font-bold text-gray-900">Склад</h1>
                 <div className="flex flex-wrap gap-3">
@@ -275,8 +337,14 @@ export default function InventoryPage() {
                                             {product.quantity}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <Link href={`/inventory/${product.id}/edit`} className="text-indigo-600 hover:text-indigo-900 mr-4">
+                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex items-center justify-end gap-3">
+                                        <button
+                                            onClick={() => addToCart(product)}
+                                            className="text-green-600 hover:text-green-900 font-medium px-2 py-1 border border-green-200 rounded hover:bg-green-50 text-xs"
+                                        >
+                                            + В чек
+                                        </button>
+                                        <Link href={`/inventory/${product.id}/edit`} className="text-indigo-600 hover:text-indigo-900">
                                             <Edit className="h-4 w-4 inline" />
                                         </Link>
                                         <button onClick={() => deleteProduct(product.id)} className="text-red-600 hover:text-red-900">
