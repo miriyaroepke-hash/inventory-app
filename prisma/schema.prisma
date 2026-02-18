@@ -53,7 +53,10 @@ model Order {
   // Client Info
   clientName    String
   clientPhone   String
-  clientAddress String?
+  clientCity    String?
+  clientStreet  String?
+  clientBuilding String?
+  clientFlat    String?
   clientNote    String?
   
   // Shipping Info
@@ -77,8 +80,13 @@ model OrderItem {
   orderId   String
   order     Order    @relation(fields: [orderId], references: [id])
   
-  productId String
-  product   Product  @relation(fields: [productId], references: [id])
+  productId String?
+  product   Product?  @relation(fields: [productId], references: [id])
+  
+  name      String   // Snapshot name or Custom name
+  sku       String?  // Snapshot sku or Custom sku
+  size      String?  // Snapshot size or Custom size
+  image     String?  // Snapshot image or Custom image (Base64 compressed)
   
   quantity  Int
   price     Float // Snapshotted price at time of order
