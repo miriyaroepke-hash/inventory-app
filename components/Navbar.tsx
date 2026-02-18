@@ -17,7 +17,8 @@ export default function Navbar() {
     const links = [
         { name: 'Главная', href: '/dashboard', icon: LayoutDashboard },
         { name: 'Склад', href: '/inventory', icon: Package },
-        { name: 'Продажа/Сканер', href: '/scan', icon: ScanBarcode },
+        { name: 'Продажи', href: '/sales', icon: ScanBarcode },
+        { name: 'Инвентаризация', href: '/scan', icon: ScanBarcode },
     ];
 
     return (

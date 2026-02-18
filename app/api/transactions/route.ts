@@ -71,3 +71,35 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Failed to process transaction' }, { status: 500 });
     }
 }
+
+export async function GET(request: Request) {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get('type');
+
+    try {
+        const whereClause: any = {};
+        if (type) {
+            whereClause.type = type;
+        }
+
+        const transactions = await prisma.transaction.findMany({
+            where: whereClause,
+            include: {
+                product: true,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+
+        return NextResponse.json(transactions);
+    } catch (error) {
+        console.error('Failed to fetch transactions', error);
+        return NextResponse.json({ error: 'Failed to fetch transactions' }, { status: 500 });
+    }
+}
