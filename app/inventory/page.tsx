@@ -202,8 +202,9 @@ export default function InventoryPage() {
     };
 
     const filteredProducts = products.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.sku.includes(searchTerm)
+        (product.quantity > 0) &&
+        (product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.sku.includes(searchTerm))
     );
 
     return (
