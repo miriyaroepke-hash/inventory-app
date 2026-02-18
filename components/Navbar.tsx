@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
-import { LayoutDashboard, Package, ScanBarcode, LogOut, Search, X } from 'lucide-react';
+import { LayoutDashboard, Package, ScanBarcode, User, LogOut, Menu, X, ShoppingCart, Database } from 'lucide-react';
 import clsx from 'clsx';
 
 export default function Navbar() {
@@ -25,7 +25,8 @@ export default function Navbar() {
     ];
 
     if (session.user.role === 'ADMIN') {
-        links.push({ name: 'Пользователи', href: '/users', icon: Package });
+        links.push({ name: 'Пользователи', href: '/users', icon: User });
+        links.push({ name: 'CRM Импорт', href: '/admin/import', icon: Database }); // Temporary Admin Link
     }
 
     return (
