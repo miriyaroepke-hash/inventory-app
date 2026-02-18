@@ -4,9 +4,6 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import sharp from 'sharp';
 
-const MOYSKLAD_LOGIN = process.env.MOYSKLAD_LOGIN;
-const MOYSKLAD_PASSWORD = process.env.MOYSKLAD_PASSWORD;
-const AUTH_HEADER = 'Basic ' + Buffer.from(`${MOYSKLAD_LOGIN}:${MOYSKLAD_PASSWORD}`).toString('base64');
 
 export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
