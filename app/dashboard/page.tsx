@@ -17,40 +17,53 @@ export default async function DashboardPage() {
 
     const isAdmin = session.user.role === 'ADMIN';
 
-    // 1. Fetch Active Orders (Not Delivered, Not Cancelled)
-    const activeOrders = await prisma.order.findMany({
-        where: {
-            status: {
-                notIn: ['DELIVERED', 'CANCELLED']
-            }
-        },
-        select: {
-            id: true,
-            source: true,
-            shippingMethod: true,
-        }
-    });
-
-    const totalActive = activeOrders.length;
-
-    // 2. Count by Category
-    const kaspiCount = activeOrders.filter(o => o.source === 'KASPI').length;
-    const sdekCount = activeOrders.filter(o => o.shippingMethod === 'SDEK').length;
-    const postCount = activeOrders.filter(o => o.shippingMethod === 'POST').length;
-    const courierCount = activeOrders.filter(o => o.shippingMethod === 'ALMATY_COURIER').length;
-    const rikaCount = activeOrders.filter(o => o.shippingMethod === 'RIKA_INDRIVE').length;
-    const pickupCount = activeOrders.filter(o => ['PICKUP', 'YANDEX'].includes(o.shippingMethod)).length;
-
-    // 3. Other Stats
-    const productCount = await prisma.product.count();
-
+    let totalActive = 0;
+    let kaspiCount = 0;
+    let sdekCount = 0;
+    let postCount = 0;
+    let courierCount = 0;
+    let rikaCount = 0;
+    let pickupCount = 0;
+    let productCount = 0;
     let recentTransactions: any[] = [];
-    if (isAdmin) {
-        recentTransactions = await prisma.transaction.findMany({
-            take: 5,
-            orderBy: { createdAt: 'desc' },
-            include: { product: true, user: true },
+    let dbError = null;
+
+    try {
+        // 1. Fetch Active Orders
+        const activeOrders = await prisma.order.findMany({
+            where: {
+                status: {
+                    notIn: ['DELIVERED', 'CANCELLED']
+                }
+            },
+            select: {
+                id: true,
+                source: true,
+                shippingMethod: true,
+            }
         });
+
+        totalActive = activeOrders.length;
+        kaspiCount = activeOrders.filter(o => o.source === 'KASPI').length;
+        sdekCount = activeOrders.filter(o => o.shippingMethod === 'SDEK').length;
+        postCount = activeOrders.filter(o => o.shippingMethod === 'POST').length;
+        courierCount = activeOrders.filter(o => o.shippingMethod === 'ALMATY_COURIER').length;
+        rikaCount = activeOrders.filter(o => o.shippingMethod === 'RIKA_INDRIVE').length;
+        pickupCount = activeOrders.filter(o => ['PICKUP', 'YANDEX'].includes(o.shippingMethod)).length;
+
+        // 3. Other Stats
+        productCount = await prisma.product.count();
+
+        if (isAdmin) {
+            recentTransactions = await prisma.transaction.findMany({
+                take: 5,
+                orderBy: { createdAt: 'desc' },
+                include: { product: true, user: true },
+            });
+        }
+    } catch (e: any) {
+        console.error("Dashboard DB Error:", e);
+        dbError = e.message || "Ошибка подключения к базе данных";
     }
 
     const dailyPlan = [
@@ -67,6 +80,23 @@ export default async function DashboardPage() {
             <h1 className="mb-4 text-2xl font-bold text-gray-900">
                 План на сегодня <span className="text-gray-400 text-lg font-normal">(Активно: {totalActive})</span>
             </h1>
+
+            {dbError && (
+                <div className="mb-6 rounded-md bg-red-50 p-4 border border-red-200">
+                    <div className="flex">
+                        <div className="flex-shrink-0">
+                            <Layers className="h-5 w-5 text-red-400" aria-hidden="true" />
+                        </div>
+                        <div className="ml-3">
+                            <h3 className="text-sm font-medium text-red-800">Ошибка базы данных</h3>
+                            <div className="mt-2 text-sm text-red-700">
+                                <p>{dbError}</p>
+                                <p className="mt-2 text-xs">Проверьте настройки Environment Variables (POSTGRES_URL) в Vercel.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6 mb-10">
                 {dailyPlan.map((stat) => (
